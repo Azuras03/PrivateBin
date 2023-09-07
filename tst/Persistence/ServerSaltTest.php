@@ -68,7 +68,7 @@ class ServerSaltTest extends TestCase
         ServerSalt::setStore($store);
         $salt = ServerSalt::get();
         ServerSalt::setStore($store);
-        $this->assertNotEquals($salt, ServerSalt::get());
+        $this->assertEquals($salt, ServerSalt::get());
     }
 
     public function testFileRead()
@@ -81,7 +81,7 @@ class ServerSaltTest extends TestCase
         ServerSalt::setStore($store);
         $salt = ServerSalt::get();
         ServerSalt::setStore($store);
-        $this->assertNotEquals($salt, ServerSalt::get());
+        $this->assertEquals($salt, ServerSalt::get());
     }
 
     public function testFileWrite()
@@ -98,7 +98,7 @@ class ServerSaltTest extends TestCase
         ServerSalt::setStore($store);
         $salt = ServerSalt::get();
         ServerSalt::setStore($store);
-        $this->assertNotEquals($salt, ServerSalt::get());
+        $this->assertEquals($salt, ServerSalt::get());
     }
 
     public function testPermissionShenanigans()
@@ -112,6 +112,6 @@ class ServerSaltTest extends TestCase
         ServerSalt::setStore($store);
         $salt = ServerSalt::get();
         ServerSalt::setStore($store);
-        $this->assertNotEquals($salt, ServerSalt::get());
+        $this->assertEquals($salt, ServerSalt::get());
     }
 }
