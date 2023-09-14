@@ -13,6 +13,7 @@ jobs:
       env:
           XDEBUG_MODE: coverage
       with:
+          memory_limit: 256M
           php_extensions: "gd mbstring xdebug" 
           configuration: "phpunit.xml"
           coverage_cobertura: "coverage.xml"
