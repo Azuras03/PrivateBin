@@ -11,7 +11,7 @@ jobs:
     - uses: php-actions/composer@v6 # or alternative dependency management
     - uses: php-actions/phpunit@v3
       with:
-          php_extensions: "gd mbstring" 
+          php_extensions: "gd mbstring xdebug" 
           configuration: "phpunit.xml"
           coverage_cobertura: "coverage.xml"
           version: 9.6.11
