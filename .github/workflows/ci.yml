@@ -14,4 +14,7 @@ jobs:
           php_extensions: "gd mbstring" 
           configuration: "phpunit.xml"
           version: 9.6.11
+    - name: Code Coverage Summary
+      uses: irongut/CodeCoverageSummary@v1.3.0
+            
     # ... then your own project steps ...
