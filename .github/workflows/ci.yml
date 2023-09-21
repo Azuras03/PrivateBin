@@ -28,7 +28,7 @@ jobs:
       uses: php-actions/phpcs@v1
       with:
         php_version: 8.1
-        path: src/
+        path: lib/
         standard: phpcs.xml
     - name: Add markdown comment
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
