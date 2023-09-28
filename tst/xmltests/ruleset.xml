@@ -1,41 +1,81 @@
 <?xml version="1.0"?>
-<ruleset name="Selective Standard">
+<ruleset name="Custom Standard">
 
- <!--
-    Use an external tool only when checking coding standards
-    and not while fixing a file.
- -->
- <config phpcs-only="true" name="zend_ca_path" value="/path/to/ZendCodeAnalyzer"/>
+ <description>A custom coding standard</description>
 
- <!--
-    Exclude some files from being fixed.
- -->
- <exclude-pattern phpcbf-only="true">*/3rdparty/*</exclude-pattern>
+ <exclude-pattern>*/tests/*</exclude-pattern>
+ <exclude-pattern>*/data/*</exclude-pattern>
 
- <!--
-    Exclude some sniffs when fixing files, but allow them
-    to still report errors while checking files.
- -->
+ <rule ref="PEAR"/>
+
+ <rule ref="/home/username/standards/mystandard"/>
+
+
+ <rule ref="/home/username/standards/custom.xml"/>
+
+
  <rule ref="Squiz">
-  <exclude phpcbf-only="true" name="Generic.WhiteSpace.ScopeIndent"/>
+  <exclude name="Squiz.PHP.CommentedOutCode"/>
  </rule>
 
- <!--
-    Exclude some messages when fixing files, but allow them
-    to still report errors while checking files.
- -->
+ <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
+ <rule ref="Generic.Commenting.Todo"/>
+ <rule ref="Generic.ControlStructures.InlineControlStructure"/>
+
  <rule ref="Generic.Commenting.Todo.CommentFound">
-  <severity phpcbf-only="true">0</severity>
+  <message>Please review this TODO comment: %s</message>
+  <severity>3</severity>
  </rule>
 
- <!--
-    Set different property values for fixing and checking.
- -->
+ <rule ref="Generic.Files.LineLength.MaxExceeded">
+  <message>Line contains %s chars, which is longer than the max limit of %s</message>
+ </rule>
+ <rule ref="Generic.Files.LineLength.TooLong">
+  <message>Line longer than %s characters; contains %s characters</message>
+ </rule>
+
+
  <rule ref="Generic.Files.LineLength">
   <properties>
-   <property phpcs-only="true" name="lineLimit" value="80"/>
-   <property phpcbf-only="true" name="lineLimit" value="120"/>
+   <property name="lineLimit" value="90"/>
+   <property name="absoluteLineLimit" value="100"/>
   </properties>
+ </rule>
+
+ <rule ref="Generic.Files.LineEndings">
+  <properties>
+   <property name="eolChar" value="\r\n"/>
+  </properties>
+ </rule>
+
+
+ <rule ref="Generic.Formatting.MultipleStatementAlignment">
+  <properties>
+   <property name="maxPadding" value="8"/>
+   <property name="ignoreMultiLine" value="true"/>
+   <property name="error" value="true"/>
+  </properties>
+ </rule>
+
+
+ <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
+  <severity>0</severity>
+ </rule>
+
+
+ <rule ref="Internal.NoCodeFound">
+  <severity>0</severity>
+ </rule>
+
+
+ <rule ref="Squiz.Strings.DoubleQuoteUsage">
+    <exclude-pattern>*/tests/*</exclude-pattern>
+    <exclude-pattern>*/data/*</exclude-pattern>
+ </rule>
+
+ <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
+    <exclude-pattern>*/tests/*</exclude-pattern>
+    <exclude-pattern>*/data/*</exclude-pattern>
  </rule>
 
 </ruleset>
