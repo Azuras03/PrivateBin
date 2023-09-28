@@ -293,11 +293,11 @@ class Controller
         if ($this->_request->isJsonApiCall()) {
             if (strlen($this->_error)) {
                 $this->_return_message(1, $this->_error);
-            } else {
+                return;
+            }
                 $this->_return_message(0, $dataid);
             }
         }
-    }
 
     /**
      * Read an existing paste or comment, only allowed via a JSON API call
@@ -458,9 +458,9 @@ class Controller
         $yourls = new YourlsProxy($this->_conf, $link);
         if ($yourls->isError()) {
             $this->_error = $yourls->getError();
-        } else {
-            $this->_status = $yourls->getUrl();
+            return;
         }
+            $this->_status = $yourls->getUrl();
     }
 
     /**
