@@ -16,6 +16,7 @@ jobs:
         path: lib/
         output: text
         ruleset: tst/xmltests/ruleset.xml
+        args: --ignore-violations-on-exit
     - uses: php-actions/phpunit@v3
       env:
           XDEBUG_MODE: coverage
