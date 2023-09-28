@@ -1,81 +1,19 @@
 <?xml version="1.0"?>
-<ruleset name="Custom Standard">
+<ruleset name="My first PHPMD rule set"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+                       http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="
+                       http://pmd.sf.net/ruleset_xml_schema.xsd">
+  <description>
+    My custom rule set that checks my code...
+  </description>
 
- <description>A custom coding standard</description>
-
- <exclude-pattern>*/tests/*</exclude-pattern>
- <exclude-pattern>*/data/*</exclude-pattern>
-
- <rule ref="PEAR"/>
-
- <rule ref="/home/username/standards/mystandard"/>
-
-
- <rule ref="/home/username/standards/custom.xml"/>
-
-
- <rule ref="Squiz">
-  <exclude name="Squiz.PHP.CommentedOutCode"/>
- </rule>
-
- <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
- <rule ref="Generic.Commenting.Todo"/>
- <rule ref="Generic.ControlStructures.InlineControlStructure"/>
-
- <rule ref="Generic.Commenting.Todo.CommentFound">
-  <message>Please review this TODO comment: %s</message>
-  <severity>3</severity>
- </rule>
-
- <rule ref="Generic.Files.LineLength.MaxExceeded">
-  <message>Line contains %s chars, which is longer than the max limit of %s</message>
- </rule>
- <rule ref="Generic.Files.LineLength.TooLong">
-  <message>Line longer than %s characters; contains %s characters</message>
- </rule>
-
-
- <rule ref="Generic.Files.LineLength">
-  <properties>
-   <property name="lineLimit" value="90"/>
-   <property name="absoluteLineLimit" value="100"/>
-  </properties>
- </rule>
-
- <rule ref="Generic.Files.LineEndings">
-  <properties>
-   <property name="eolChar" value="\r\n"/>
-  </properties>
- </rule>
-
-
- <rule ref="Generic.Formatting.MultipleStatementAlignment">
-  <properties>
-   <property name="maxPadding" value="8"/>
-   <property name="ignoreMultiLine" value="true"/>
-   <property name="error" value="true"/>
-  </properties>
- </rule>
-
-
- <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
-  <severity>0</severity>
- </rule>
-
-
- <rule ref="Internal.NoCodeFound">
-  <severity>0</severity>
- </rule>
-
-
- <rule ref="Squiz.Strings.DoubleQuoteUsage">
-    <exclude-pattern>*/tests/*</exclude-pattern>
-    <exclude-pattern>*/data/*</exclude-pattern>
- </rule>
-
- <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
-    <exclude-pattern>*/tests/*</exclude-pattern>
-    <exclude-pattern>*/data/*</exclude-pattern>
- </rule>
-
+  <rule ref="rulesets/codesize.xml" />
+  <rule ref="rulesets/cleancode.xml" />
+  <rule ref="rulesets/controversial.xml" />
+  <rule ref="rulesets/design.xml" />
+  <rule ref="rulesets/naming.xml" />
+  <rule ref="rulesets/unusedcode.xml" />
 </ruleset>
