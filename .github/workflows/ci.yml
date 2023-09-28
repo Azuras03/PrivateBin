@@ -15,7 +15,7 @@ jobs:
         php_version: 8.1
         path: lib/
         output: text
-        ruleset: test/phpmd/ruleset.xml
+        ruleset: tst/xmltests/ruleset.xml
     - uses: php-actions/phpunit@v3
       env:
           XDEBUG_MODE: coverage
