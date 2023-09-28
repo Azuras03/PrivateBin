@@ -9,6 +9,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: php-actions/composer@v6 # or alternative dependency management
+    - name: PHP Mess Detector
+      uses: php-actions/phpmd@v1
+      with:
+        php_version: 8.1
+        path: lib/
+        output: text
+        ruleset: test/phpmd/ruleset.xml
     - uses: php-actions/phpunit@v3
       env:
           XDEBUG_MODE: coverage
@@ -28,8 +35,8 @@ jobs:
       uses: php-actions/phpcs@v1
       with:
         php_version: 8.1
+        standard: psr1
         path: lib/
-        standard: phpcs.xml
     - name: Add markdown comment
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
             
