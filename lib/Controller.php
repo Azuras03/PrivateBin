@@ -205,7 +205,7 @@ class Controller
         try {
             TrafficLimiter::canPass();
         } catch (Exception $e) {
-            $this->_returnMessage(1, $e->getMessage());
+            $this->_return_message(1, $e->getMessage());
             return;
         }
 
@@ -215,13 +215,13 @@ class Controller
             array_key_exists('parentid', $data) &&
             !empty($data['parentid']);
         if (!FormatV2::isValid($data, $isComment)) {
-            $this->_returnMessage(1, I18n::_('Invalid data.'));
+            $this->_return_message(1, I18n::_('Invalid data.'));
             return;
         }
         $sizelimit = $this->_conf->getKey('sizelimit');
         // Ensure content is not too big.
         if (strlen($data['ct']) > $sizelimit) {
-            $this->_returnMessage(
+            $this->_return_message(
                 1,
                 I18n::_(
                     'Paste is limited to %s of encrypted data.',
@@ -240,12 +240,12 @@ class Controller
                     $comment->setData($data);
                     $comment->store();
                 } catch (Exception $e) {
-                    $this->_returnMessage(1, $e->getMessage());
+                    $this->_return_message(1, $e->getMessage());
                     return;
                 }
-                $this->_returnMessage(0, $comment->getId());
+                $this->_return_message(0, $comment->getId());
             } else {
-                $this->_returnMessage(1, I18n::_('Invalid data.'));
+                $this->_return_message(1, I18n::_('Invalid data.'));
             }
         }
         // The user posts a standard paste.
@@ -256,9 +256,9 @@ class Controller
                 $paste->setData($data);
                 $paste->store();
             } catch (Exception $e) {
-                return $this->_returnMessage(1, $e->getMessage());
+                return $this->_return_message(1, $e->getMessage());
             }
-            $this->_returnMessage(0, $paste->getId(), array('deletetoken' => $paste->getDeleteToken()));
+            $this->_return_message(0, $paste->getId(), array('deletetoken' => $paste->getDeleteToken()));
         }
     }
 
@@ -293,11 +293,11 @@ class Controller
         if ($this->_request->isJsonApiCall()) {
             if (strlen($this->_error)) {
                 $this->_return_message(1, $this->_error);
-                return;
-            }
+            } else {
                 $this->_return_message(0, $dataid);
             }
         }
+    }
 
     /**
      * Read an existing paste or comment, only allowed via a JSON API call
@@ -318,12 +318,12 @@ class Controller
                 if (array_key_exists('salt', $data['meta'])) {
                     unset($data['meta']['salt']);
                 }
-                $this->_returnMessage(0, $dataid, (array) $data);
+                $this->_return_message(0, $dataid, (array) $data);
             } else {
-                $this->_returnMessage(1, self::GENERIC_ERROR);
+                $this->_return_message(1, self::GENERIC_ERROR);
             }
         } catch (Exception $e) {
-            $this->_returnMessage(1, $e->getMessage());
+            $this->_return_message(1, $e->getMessage());
         }
     }
 
@@ -458,9 +458,9 @@ class Controller
         $yourls = new YourlsProxy($this->_conf, $link);
         if ($yourls->isError()) {
             $this->_error = $yourls->getError();
-            return;
-        }
+        } else {
             $this->_status = $yourls->getUrl();
+        }
     }
 
     /**
@@ -471,7 +471,7 @@ class Controller
      * @param  string $message
      * @param  array $other
      */
-    private function _returnMessage($status, $message, $other = array())
+    private function _return_message($status, $message, $other = array())
     {
         $result = array('status' => $status);
         if ($status) {

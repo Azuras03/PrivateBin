@@ -31,7 +31,7 @@ class Database extends AbstractData
      * @access private
      * @var PDO
      */
-    private $_db;
+    private $db;
 
     /**
      * table prefix
@@ -39,7 +39,7 @@ class Database extends AbstractData
      * @access private
      * @var string
      */
-    private $_prefix = '';
+    private $prefix = '';
 
     /**
      * database type
@@ -61,7 +61,7 @@ class Database extends AbstractData
     {
         // set table prefix if given
         if (array_key_exists('tbl', $options)) {
-            $this->_prefix = $options['tbl'];
+            $this->prefix = $options['tbl'];
         }
 
         // initialize the db connection with new options
@@ -87,7 +87,7 @@ class Database extends AbstractData
                 $options['opt'][PDO::MYSQL_ATTR_INIT_COMMAND] = "SET SESSION sql_mode='ANSI_QUOTES'";
             }
             $tableQuery = $this->_getTableQuery($this->_type);
-            $this->_db  = new PDO(
+            $this->db  = new PDO(
                 $options['dsn'],
                 $options['usr'],
                 $options['pwd'],
@@ -95,7 +95,7 @@ class Database extends AbstractData
             );
 
             // check if the database contains the required tables
-            $tables = $this->_db->query($tableQuery)->fetchAll(PDO::FETCH_COLUMN, 0);
+            $tables = $this->db->query($tableQuery)->fetchAll(PDO::FETCH_COLUMN, 0);
 
             // create paste table if necessary
             if (!in_array($this->_sanitizeIdentifier('paste'), $tables)) {
@@ -486,7 +486,7 @@ class Database extends AbstractData
      */
     protected function _getExpiredPastes($batchsize)
     {
-        $statement = $this->_db->prepare(
+        $statement = $this->db->prepare(
             'SELECT "dataid" FROM "' . $this->_sanitizeIdentifier('paste') .
             '" WHERE "expiredate" < ? AND "expiredate" != ? ' .
             ($this->_type === 'oci' ? 'FETCH NEXT ? ROWS ONLY' : 'LIMIT ?')
@@ -500,7 +500,7 @@ class Database extends AbstractData
      */
     public function getAllPastes()
     {
-        return $this->_db->query(
+        return $this->db->query(
             'SELECT "dataid" FROM "' . $this->_sanitizeIdentifier('paste') . '"'
         )->fetchAll(PDO::FETCH_COLUMN, 0);
     }
@@ -516,7 +516,7 @@ class Database extends AbstractData
      */
     private function _exec($sql, array $params)
     {
-        $statement = $this->_db->prepare($sql);
+        $statement = $this->db->prepare($sql);
         foreach ($params as $key => &$parameter) {
             $position = $key + 1;
             if (is_int($parameter)) {
@@ -544,7 +544,7 @@ class Database extends AbstractData
      */
     private function _select($sql, array $params, $firstOnly = false)
     {
-        $statement = $this->_db->prepare($sql);
+        $statement = $this->db->prepare($sql);
         $statement->execute($params);
         if ($firstOnly) {
             $result = $statement->fetch(PDO::FETCH_ASSOC);
@@ -748,7 +748,7 @@ class Database extends AbstractData
         $dataType                   = $this->_getDataType();
         $attachmentType             = $this->_getAttachmentType();
         $metaType                   = $this->_getMetaType();
-        $this->_db->exec(
+        $this->db->exec(
             'CREATE TABLE "' . $this->_sanitizeIdentifier('paste') . '" ( ' .
             "\"dataid\" CHAR(16) NOT NULL$main_key, " .
             "\"data\" $attachmentType, " .
@@ -771,7 +771,7 @@ class Database extends AbstractData
     {
         list($main_key, $after_key) = $this->_getPrimaryKeyClauses();
         $dataType                   = $this->_getDataType();
-        $this->_db->exec(
+        $this->db->exec(
             'CREATE TABLE "' . $this->_sanitizeIdentifier('comment') . '" ( ' .
             "\"dataid\" CHAR(16) NOT NULL$main_key, " .
             '"pasteid" CHAR(16), ' .
@@ -782,7 +782,7 @@ class Database extends AbstractData
             "\"postdate\" INT$after_key )"
         );
         if ($this->_type === 'oci') {
-            $this->_db->exec(
+            $this->db->exec(
                 'declare
                     already_exists  exception;
                     columns_indexed exception;
@@ -797,7 +797,7 @@ class Database extends AbstractData
             );
         } else {
             // CREATE INDEX IF NOT EXISTS not supported as of Oracle MySQL <= 8.0
-            $this->_db->exec(
+            $this->db->exec(
                 'CREATE INDEX "' .
                 $this->_sanitizeIdentifier('comment_parent') . '" ON "' .
                 $this->_sanitizeIdentifier('comment') . '" ("pasteid")'
@@ -815,7 +815,7 @@ class Database extends AbstractData
         list($main_key, $after_key) = $this->_getPrimaryKeyClauses('id');
         $charType                   = $this->_type === 'oci' ? 'VARCHAR2(16)' : 'CHAR(16)';
         $textType                   = $this->_getMetaType();
-        $this->_db->exec(
+        $this->db->exec(
             'CREATE TABLE "' . $this->_sanitizeIdentifier('config') .
             "\" ( \"id\" $charType NOT NULL$main_key, \"value\" $textType$after_key )"
         );
@@ -853,7 +853,7 @@ class Database extends AbstractData
      */
     private function _sanitizeIdentifier($identifier)
     {
-        return preg_replace('/[^A-Za-z0-9_]+/', '', $this->_prefix . $identifier);
+        return preg_replace('/[^A-Za-z0-9_]+/', '', $this->prefix . $identifier);
     }
 
     /**
@@ -870,47 +870,47 @@ class Database extends AbstractData
             case '0.21':
                 // create the meta column if necessary (pre 0.21 change)
                 try {
-                    $this->_db->exec(
+                    $this->db->exec(
                         'SELECT "meta" FROM "' . $this->_sanitizeIdentifier('paste') . '" ' .
                         ($this->_type === 'oci' ? 'FETCH NEXT 1 ROWS ONLY' : 'LIMIT 1')
                     );
                 } catch (PDOException $e) {
-                    $this->_db->exec('ALTER TABLE "' . $this->_sanitizeIdentifier('paste') . '" ADD COLUMN "meta" TEXT');
+                    $this->db->exec('ALTER TABLE "' . $this->_sanitizeIdentifier('paste') . '" ADD COLUMN "meta" TEXT');
                 }
                 // SQLite only allows one ALTER statement at a time...
-                $this->_db->exec(
+                $this->db->exec(
                     'ALTER TABLE "' . $this->_sanitizeIdentifier('paste') .
                     "\" ADD COLUMN \"attachment\" $attachmentType"
                 );
-                $this->_db->exec(
+                $this->db->exec(
                     'ALTER TABLE "' . $this->_sanitizeIdentifier('paste') . "\" ADD COLUMN \"attachmentname\" $dataType"
                 );
                 // SQLite doesn't support MODIFY, but it allows TEXT of similar
                 // size as BLOB, so there is no need to change it there
                 if ($this->_type !== 'sqlite') {
-                    $this->_db->exec(
+                    $this->db->exec(
                         'ALTER TABLE "' . $this->_sanitizeIdentifier('paste') .
                         "\" ADD PRIMARY KEY (\"dataid\"), MODIFY COLUMN \"data\" $dataType"
                     );
-                    $this->_db->exec(
+                    $this->db->exec(
                         'ALTER TABLE "' . $this->_sanitizeIdentifier('comment') .
                         "\" ADD PRIMARY KEY (\"dataid\"), MODIFY COLUMN \"data\" $dataType, " .
                         "MODIFY COLUMN \"nickname\" $dataType, MODIFY COLUMN \"vizhash\" $dataType"
                     );
                 } else {
-                    $this->_db->exec(
+                    $this->db->exec(
                         'CREATE UNIQUE INDEX IF NOT EXISTS "' .
                         $this->_sanitizeIdentifier('paste_dataid') . '" ON "' .
                         $this->_sanitizeIdentifier('paste') . '" ("dataid")'
                     );
-                    $this->_db->exec(
+                    $this->db->exec(
                         'CREATE UNIQUE INDEX IF NOT EXISTS "' .
                         $this->_sanitizeIdentifier('comment_dataid') . '" ON "' .
                         $this->_sanitizeIdentifier('comment') . '" ("dataid")'
                     );
                 }
                 // CREATE INDEX IF NOT EXISTS not supported as of Oracle MySQL <= 8.0
-                $this->_db->exec(
+                $this->db->exec(
                     'CREATE INDEX "' .
                     $this->_sanitizeIdentifier('comment_parent') . '" ON "' .
                     $this->_sanitizeIdentifier('comment') . '" ("pasteid")'
@@ -921,7 +921,7 @@ class Database extends AbstractData
                 // size as BLOB and PostgreSQL uses TEXT, so there is no need
                 // to change it there
                 if ($this->_type !== 'sqlite' && $this->_type !== 'pgsql') {
-                    $this->_db->exec(
+                    $this->db->exec(
                         'ALTER TABLE "' . $this->_sanitizeIdentifier('paste') .
                         "\" MODIFY COLUMN \"data\" $attachmentType"
                     );
