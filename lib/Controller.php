@@ -241,11 +241,12 @@ class Controller
                     $comment->store();
                 } catch (Exception $e) {
                     $this->_returnMessage(1, $e->getMessage());
-                    return "";
+                    return;
                 }
                 $this->_returnMessage(0, $comment->getId());
             } else {
                 $this->_returnMessage(1, I18n::_('Invalid data.'));
+                return;
             }
         }
         // The user posts a standard paste.
