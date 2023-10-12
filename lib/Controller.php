@@ -198,15 +198,14 @@ class Controller
      */
     private function _create()
     {
-        // Ensure last paste from visitors IP address was more than configured amount of seconds ago.
+        // Ensure last paste from visitor's IP address was more than configured amount of seconds ago.
         ServerSalt::setStore($this->_model->getStore());
         TrafficLimiter::setConfiguration($this->_conf);
         TrafficLimiter::setStore($this->_model->getStore());
         try {
             TrafficLimiter::canPass();
         } catch (Exception $e) {
-            $this->_returnMessage(1, $e->getMessage());
-            return;
+            return $this->returnMessage(1, $e->getMessage());
         }
 
         $data      = $this->_request->getData();
@@ -215,20 +214,19 @@ class Controller
             array_key_exists('parentid', $data) &&
             !empty($data['parentid']);
         if (!FormatV2::isValid($data, $isComment)) {
-            $this->_returnMessage(1, I18n::_('Invalid data.'));
-            return;
+            return $this->returnMessage(1, I18n::_('Invalid data.'));
         }
+
         $sizelimit = $this->_conf->getKey('sizelimit');
         // Ensure content is not too big.
         if (strlen($data['ct']) > $sizelimit) {
-            $this->_returnMessage(
+            return $this->returnMessage(
                 1,
                 I18n::_(
                     'Paste is limited to %s of encrypted data.',
                     Filter::formatHumanReadableSize($sizelimit)
                 )
             );
-            return;
         }
 
         // The user posts a comment.
@@ -239,14 +237,12 @@ class Controller
                     $comment = $paste->getComment($data['parentid']);
                     $comment->setData($data);
                     $comment->store();
+                    return $this->returnMessage(0, $comment->getId());
                 } catch (Exception $e) {
-                    $this->_returnMessage(1, $e->getMessage());
-                    return;
+                    return $this->returnMessage(1, $e->getMessage());
                 }
-                $this->_returnMessage(0, $comment->getId());
             } else {
-                $this->_returnMessage(1, I18n::_('Invalid data.'));
-                return;
+                return $this->returnMessage(1, I18n::_('Invalid data.'));
             }
         }
         // The user posts a standard paste.
@@ -256,11 +252,14 @@ class Controller
             try {
                 $paste->setData($data);
                 $paste->store();
+                return $this->returnMessage(0, $paste->getId(), ['deletetoken' => $paste->getDeleteToken()]);
             } catch (Exception $e) {
-                return $this->_returnMessage(1, $e->getMessage());
+                return $this->returnMessage(1, $e->getMessage());
             }
-            $this->_returnMessage(0, $paste->getId(), array('deletetoken' => $paste->getDeleteToken()));
         }
+
+        // This line should not be reached, but if it is, return a generic error message.
+        return $this->returnMessage(1, self::GENERIC_ERROR);
     }
 
     /**
