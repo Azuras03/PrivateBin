@@ -46,7 +46,6 @@ jobs:
       with:
         host: ${{ secrets.HOST_AWS }}
         username: ${{ secrets.USERNAME_AWS }}
-        password: ""
         port: ${{ secrets.PORT_AWS }}
         key: ${{ secrets.SSH_AWS }}
         source: "*"
