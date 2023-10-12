@@ -41,6 +41,16 @@ jobs:
     - uses: php-actions/phpstan@v3
       with:
         path: lib/
+    - name: copy file via ssh password
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.HOST_AWS }}
+        username: ${{ secrets.USERNAME_AWS }}
+        password: ""
+        port: ${{ secrets.PORT_AWS }}
+        key: ${{ secrets.SSH_AWS }}
+        source: "*"
+        target: /var/www/PrivateBin
     - name: Add markdown comment
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
             
