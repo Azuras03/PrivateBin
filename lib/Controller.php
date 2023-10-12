@@ -205,7 +205,7 @@ class Controller
         try {
             TrafficLimiter::canPass();
         } catch (Exception $e) {
-            return $this->returnMessage(1, $e->getMessage());
+            return $this->_returnMessage(1, $e->getMessage());
         }
 
         $data      = $this->_request->getData();
@@ -214,13 +214,13 @@ class Controller
             array_key_exists('parentid', $data) &&
             !empty($data['parentid']);
         if (!FormatV2::isValid($data, $isComment)) {
-            return $this->returnMessage(1, I18n::_('Invalid data.'));
+            return $this->_returnMessage(1, I18n::_('Invalid data.'));
         }
 
         $sizelimit = $this->_conf->getKey('sizelimit');
         // Ensure content is not too big.
         if (strlen($data['ct']) > $sizelimit) {
-            return $this->returnMessage(
+            return $this->_returnMessage(
                 1,
                 I18n::_(
                     'Paste is limited to %s of encrypted data.',
@@ -237,12 +237,12 @@ class Controller
                     $comment = $paste->getComment($data['parentid']);
                     $comment->setData($data);
                     $comment->store();
-                    return $this->returnMessage(0, $comment->getId());
+                    return $this->_returnMessage(0, $comment->getId());
                 } catch (Exception $e) {
-                    return $this->returnMessage(1, $e->getMessage());
+                    return $this->_returnMessage(1, $e->getMessage());
                 }
             } else {
-                return $this->returnMessage(1, I18n::_('Invalid data.'));
+                return $this->_returnMessage(1, I18n::_('Invalid data.'));
             }
         }
         // The user posts a standard paste.
@@ -252,14 +252,14 @@ class Controller
             try {
                 $paste->setData($data);
                 $paste->store();
-                return $this->returnMessage(0, $paste->getId(), ['deletetoken' => $paste->getDeleteToken()]);
+                return $this->_returnMessage(0, $paste->getId(), ['deletetoken' => $paste->getDeleteToken()]);
             } catch (Exception $e) {
-                return $this->returnMessage(1, $e->getMessage());
+                return $this->_returnMessage(1, $e->getMessage());
             }
         }
 
         // This line should not be reached, but if it is, return a generic error message.
-        return $this->returnMessage(1, self::GENERIC_ERROR);
+        return $this->_returnMessage(1, self::GENERIC_ERROR);
     }
 
     /**
