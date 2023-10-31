@@ -48,8 +48,8 @@ jobs:
         username: ${{ secrets.USERNAME_AWS }}
         port: ${{ secrets.PORT_AWS }}
         key: ${{ secrets.SSH_AWS }}
-        source: "*"
-        target: "/var/www/PrivateBin"
+        source: '*'
+        target: "/home/ubuntu/Automatisation/PrivateBin"
     - name: Add markdown comment
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
             
